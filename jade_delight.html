@@ -1,0 +1,244 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Jade Delight</title>
+<link rel='stylesheet' type="text/css" href="style.css" />
+</head>
+
+<body>
+<script language="javascript">
+//added
+var delivery = 0;
+
+function MenuItem(name, cost)
+{
+	this.name = name;
+	this.cost=cost;
+}
+
+menuItems = new Array(
+	new MenuItem("Chicken Chop Suey", 4.50),
+	new MenuItem("Sweet and Sour Pork", 6.25),
+	new MenuItem("Shrimp Lo Mein", 5.25),
+	new MenuItem("Moo Shi Chicken", 6.50),
+	new MenuItem("Fried Rice", 2.35)
+);
+
+//added
+function makeSelect(name, minRange, maxRange, i, cost)
+{
+	var t= "";
+	t = "<select name='" + name + "' onchange='showValue("+i+", "+cost+")' size='1'>";
+	for (j=minRange; j<=maxRange; j++)
+	   t += "<option value='" + i + "' >" + j + "</option>";
+	t+= "</select>";
+	return t;
+}
+
+//" + j + "
+
+</script>
+
+<script language="javascript">
+
+
+//added
+function yesnoCheck() {
+    if (document.getElementById('yesCheck').checked) {
+        document.getElementById('ifYes').style.visibility = 'visible';
+				delivery = 1;
+    }
+    else {
+			document.getElementById('ifYes').style.visibility = 'hidden';
+			delivery = 0;
+	}
+
+}
+
+</script>
+
+<h1>• Jade Delight •</h1>
+
+<!-- added -->
+
+<form>
+<div id = 'intro'>
+<!-- added -->
+<p>First Name: <input type="text"  name='fname' /></p>
+<p>Last Name*:  <input type="text"  name='lname'/></p>
+<p>Phone*: <input type="text"  name='phone' /></p>
+
+<p>
+	<!-- added -->
+	<input checked="true" type="radio" onclick="javascript:yesnoCheck();" name="yesno" id="noCheck"/>Pickup
+	<input type="radio"  onclick="javascript:yesnoCheck();" name="yesno" id="yesCheck"/>
+	Delivery
+</p>
+
+<!-- added -->
+<p id="ifYes" style="visibility:hidden" >
+	Street*: <input type="text"  name='street' />
+	City*: <input type="text"  name='city' />
+</p>
+<br>
+</div>
+<table border="0" cellpadding="3">
+  <tr>
+    <th>Select Item</th>
+    <th>Item Name</th>
+    <th>Cost Each</th>
+    <th>Total Cost</th>
+  </tr>
+
+
+<script language="javascript">
+
+  var s = "";
+
+  for (i=0; i< menuItems.length; i++)
+  {
+	  s += "<tr><td>";
+	  s += makeSelect("quan" + i, 0, 10, i, menuItems[i].cost.toFixed(2));
+	  s += "</td><td>" + menuItems[i].name + "</td>";
+	  s += "<td> $ " + menuItems[i].cost.toFixed(2) + "</td>";
+		// added
+	  s += "<td>$<input type='text' value='' id=costcss name='cost'/></td></tr>";
+  }
+
+  document.writeln(s);
+
+// added
+	function showValue(i, cost){
+		//set all the values to 0
+		for (j = 0; j<5; j++){
+			if (document.forms[0].cost[j].value == 0 || document.forms[0].cost[j].value == '')
+			document.forms[0].cost[j].value = 0;
+		}
+
+		//access the selected food toatal and change the value
+		arr = document.getElementsByName("quan" + i);
+		quantity = arr[0].selectedIndex;
+		m = document.forms[0].cost[i];
+		m.value = quantity*cost;
+
+		//add up all the values
+		var tot = 0;
+		for (k = 0; k<5; k++){
+			z = parseFloat(document.forms[0].cost[k].value);
+			tot = tot + z;
+		}
+		//write in subtotal, tax and total
+		sub = document.getElementById("subtotal").value = tot;
+		tax = sub * 0.0625;
+		rounded = tax.toFixed(2);
+		document.getElementById("tax").value = rounded;
+		total = sub * 1.0625;
+		final = total.toFixed(2);
+		document.getElementById("total").value = final;
+	}
+
+//added
+	function validate()	{
+
+
+		var valid = 1;
+		//validate last name
+			if (document.forms[0].lname.value=="")
+			{
+				alert ("Please Enter a Last Name");
+				valid = 0;
+			}
+		//validate phone number
+			var str = document.forms[0].phone.value;
+			var regex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/;
+			res = str.match(regex);
+
+			if (document.forms[0].phone.value==""){
+				alert ("Please Enter a Phone Number")
+				valid = 0;
+			}else if (!res){
+					alert("Please Enter a Valid Phone Number (XXXXXXXXXX)");
+					valid = 0;
+				}
+
+				//validate dilivery and create timeout
+				var time;
+				var method;
+				if (delivery){
+					if (document.forms[0].city.value=="")
+					{
+						alert ("Please Enter a City Name");
+						valid = 0;
+					}
+					if (document.forms[0].street.value=="")
+					{
+						alert ("Please Enter a Street Name");
+						valid = 0;
+					}
+					time = 30;
+					method = "delivery";
+				}else{
+					time = 15;
+					method = "pickup";
+				}
+
+
+		//validate that at least one item was bought
+		var z = 1;
+		Loop:
+		for (i=0; i<5; i++){
+			arr = document.getElementsByName("quan" + i);
+			quantity = arr[0].selectedIndex;
+			if (quantity != 0){
+				z = 1;
+				break Loop;
+			}else{
+				z = 0;
+			}
+		}
+		if (z==0){
+			alert ("Please Select At Least One Item");
+			valid = 0;
+		}
+
+
+
+		//if everything works, display order/time/price
+		var s = "";
+		for (i=0; i<5; i++){
+			arr = document.getElementsByName("quan" + i);
+			quantity = arr[0].selectedIndex;
+			name = menuItems[i].name;
+				if (quantity != 0){
+				s += quantity + " " + name + "(s)\n"
+			}
+		}
+		total = document.getElementById("total").value;
+			if (valid == 1){
+				alert ("Thank you for shopping with us today! You ordered for " + method + ":\n"
+							 + s + "Your total is: $" + total + "\nIt will be ready in " + time + " mins :)");
+			}
+
+	}
+
+</script>
+
+
+
+
+</table>
+
+<p>Subtotal: $ <input type="text"  name='subtotal' id="subtotal"/>
+</p>
+<p>Mass tax 6.25%:
+  $ <input type="text"  name='tax' id="tax"/>
+</p>
+<p>Total: $ <input type="text"  name='total' id="total" />
+</p>
+
+<input type = "button" value = "Submit Order" onclick="validate()"/>
+
+</form>
+</body>
+</html>

@@ -221,6 +221,11 @@ function yesnoCheck() {
 			}
 
 	}
+	
+	
+	$(document).ready(function() {
+		$("#button0").click(validate);
+		})
 
 </script>
 
@@ -237,7 +242,7 @@ function yesnoCheck() {
 <p>Total: $ <input type="text"  name='total' id="total" />
 </p>
 
-<input type = "button" value = "Submit Order" onclick="validate()"/>
+<input type = "button" value = "Submit Order"/>
 
 </form>
 </body>
